@@ -16,10 +16,15 @@ Next Dialog Action Prediction model
 Example:
 
 `- action: "starts"`
+
 `  actor: "bot"`
+
 `- actor: "user"`
+
 `  valence: "4"`
+
 `  activation: "4"`
+
 `  utterance: "hello"`
 
 ## Using model
