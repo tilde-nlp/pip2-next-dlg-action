@@ -17,15 +17,15 @@ Example:
 
 `- action: "starts"`
 
-`  actor: "bot"`
+`&nbsp;&nbsp;actor: "bot"`
 
 `- actor: "user"`
 
-`  valence: "4"`
+`&nbsp;&nbsp;valence: "4"`
 
-`  activation: "4"`
+`&nbsp;&nbsp;activation: "4"`
 
-`  utterance: "hello"`
+`&nbsp;&nbsp;utterance: "hello"`
 
 ## Using model
 - Trained model is run by command `python PredictNextAction.py`. It returns the list of actions and probabilities in JSON format.
