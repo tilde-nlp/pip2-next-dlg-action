@@ -15,17 +15,12 @@ Next Dialog Action Prediction model
 - Training data are files in YAML format.
 Example:
 <pre>
-`- action: "starts"`
-
-`  actor: "bot"`
-
-`- actor: "user"`
-
-`  valence: "4"`
-
-`  activation: "4"`
-
-`  utterance: "hello"`
+- action: "starts"
+  actor: "bot"
+- actor: "user"
+  valence: "4"
+  activation: "4"
+  utterance: "hello"
 </pre>
 ## Using model
 - Trained model is run by command `python PredictNextAction.py`. It returns the list of actions and probabilities in JSON format.
