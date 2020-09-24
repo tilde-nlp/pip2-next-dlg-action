@@ -14,13 +14,13 @@ Next Dialog Action Prediction model
 - File `train_config.ini` contains path for the model dictionary, path for the model, path of the embedding file, directory of training data (all files in the directory will be used for model training), embedding dimensions, embedding engine (`fasttext' is the only option), use of emotion variables in model training, number of epochs, number of folds for the cross validation.
 - Training data are files in YAML format.
 Example:
-`
-- action: "starts"
-  actor: "bot"
-- actor: "user"
-  valence: "4"
-  activation: "4"
-  utterance: "hello"`
+
+`- action: "starts"`
+`  actor: "bot"`
+`- actor: "user"`
+`  valence: "4"`
+`  activation: "4"`
+`  utterance: "hello"`
 
 ## Using model
 - Trained model is run by command `python PredictNextAction.py`. It returns the list of actions and probabilities in JSON format.
