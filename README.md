@@ -39,4 +39,4 @@ Example:
 The research has been supported by the European Regional Development Fund within the project “Multilingual Artificial Intelligence Based Human Computer Interaction” No. 1.1.1.1/18/A/148.
 
 ## Licence
-Licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/).
+Licensed under a [MIT](https://opensource.org/licenses/MIT)
