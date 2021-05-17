@@ -1,12 +1,24 @@
 import sys
 import numpy as np
 import pandas as pd
-
+import random
 from itertools import chain
 np.set_printoptions(edgeitems=30, linewidth=100000)
 
 from Embeddings import Embeddings
 
+def ResetEntitiesInHistory(history, entity):
+    if entity[0]!='_':
+        if entity in history:
+            history.remove(entity)
+    else:
+        history[:] = [x for x in history if not x.startswith(entity)]
+
+def normalizeEmotions(dialog_line):
+    #ar normalizēšanu nepaliek labāk
+   # dialog_line['valence']= dialog_line['valence']/8.0
+   # dialog_line['activation']=dialog_line['activation']/8.0
+    return dialog_line
 
 def readYamlDocs(path, vectorize=False, embobj=None,use_emotion=False):
 
@@ -18,7 +30,7 @@ def readYamlDocs(path, vectorize=False, embobj=None,use_emotion=False):
     yaml = YAML(typ='safe',pure=True)
 
     with open(Path(path), 'r',True,'utf-8') as file:
-       data = file.read()
+       data = file.read().replace('\\"',' ')
        results=yaml.load_all(data)
     file.close()
     #results =yaml.load_all(Path(path)) fails with UnicodeDecodeError for non-latin characters
@@ -39,19 +51,28 @@ def readYamlDocs(path, vectorize=False, embobj=None,use_emotion=False):
         dialog_line0['action']='_step0_'
         dialog_line0['valence']=4.0
         dialog_line0['activation']=4.0
-        dialog_lines.append(dialog_line0)
+        #dialog_line0['input_mode']='txt'
+        dialog_lines.append(normalizeEmotions(dialog_line0))
 
         for line in dialog:
             dialog_line={}
             dialog_line['entities'] = []
-            dialog_line['prev_entities'] = []
+            dialog_line['prev_entities'] = prev_entities
             dialog_line['intent'] = []
             dialog_line['action'] = '-'
             dialog_line['valence']=4.0
             dialog_line['activation']=4.0
+           # dialog_line['input_mode']='txt'
 
             if 'entities' in line:
-                dialog_line['entities']=[  str(k) for k, v in line['entities'].items()]
+                for k, v in line['entities'].items():
+                    if len(str(v))==0:
+                        ResetEntitiesInHistory(prev_entities,str(k))
+                    elif str(k)[0]=='_':
+                        ResetEntitiesInHistory(prev_entities,str(k))
+                        dialog_line['entities'].append(str(k)+str(v).lower())
+                    else:
+                        dialog_line['entities'].append(str(k))
 
             if 'action' in line:
                 dialog_line['action']=line['action']
@@ -66,17 +87,22 @@ def readYamlDocs(path, vectorize=False, embobj=None,use_emotion=False):
                 elif 'intents' in line :
                     dialog_line['intent']=line['intents']
 
-            dialog_line['prev_entities'] = prev_entities
             if 'entities' in dialog_line:
                 prev_entities=list(set(dialog_line['entities'] + prev_entities))
 
             if use_emotion:
                 if 'valence' in line:
                     dialog_line['valence']=float(line['valence'])
+                    if dialog_line['valence']==4.0:
+                        dialog_line['valence']=dialog_line['valence']+random.randrange(-50, 50)/100
                 if 'activation' in line:
                     dialog_line['activation']=float(line['activation'])
+                    if dialog_line['activation']==4.0:
+                        dialog_line['activation']=dialog_line['activation']+random.randrange(-50, 50)/100
+           # if 'input_mode' in line:
+           #     dialog_line['input_mode']=line['input_mode']
 
-            dialog_lines.append(dialog_line)
+            dialog_lines.append(normalizeEmotions(dialog_line))
 
         if dialog_lines:
             dialogs.append(dialog_lines)
@@ -88,6 +114,7 @@ def readJSONBuffer(jsontxt, vectorize=False,embobj=None,use_emotion=False):
 
     dialogs = []
     import simplejson as json
+    #print(jsontxt)
     results =json.loads(jsontxt,encoding="utf-8")
 
     prev_entities = []
@@ -100,19 +127,28 @@ def readJSONBuffer(jsontxt, vectorize=False,embobj=None,use_emotion=False):
     dialog_line0['action']='_step0_'
     dialog_line0['valence']=4.0
     dialog_line0['activation']=4.0
-    dialog_lines.append(dialog_line0)
+    #dialog_line0['input_mode']='txt'
+    dialog_lines.append(normalizeEmotions(dialog_line0))
 
     for line in results:
         dialog_line={}
         dialog_line['entities'] = []
-        dialog_line['prev_entities'] = []
+        dialog_line['prev_entities'] = prev_entities
         dialog_line['intent'] = []
         dialog_line['action'] = '-'
         dialog_line['valence']=4.0
         dialog_line['activation']=4.0
+        #dialog_line['input_mode']='txt'
 
         if 'entities' in line:
-            dialog_line['entities']=[  k for k, v in line['entities'].items()]
+            for k, v in line['entities'].items():
+                if len(str(v))==0:
+                    ResetEntitiesInHistory(prev_entities,str(k))
+                elif str(k)[0]=='_':
+                    ResetEntitiesInHistory(prev_entities,str(k))
+                    dialog_line['entities'].append(str(k)+str(v).lower())
+                else:
+                    dialog_line['entities'].append(str(k))
         if 'action' in line:
             dialog_line['action']=line['action']
 
@@ -126,17 +162,23 @@ def readJSONBuffer(jsontxt, vectorize=False,embobj=None,use_emotion=False):
             elif 'intents' in line :
                 dialog_line['intent']=line['intents']
 
-        dialog_line['prev_entities'] = prev_entities
         if 'entities' in dialog_line:
             prev_entities=list(set(dialog_line['entities'] + prev_entities))
 
         if use_emotion:
             if 'valence' in line:
                 dialog_line['valence']=float(line['valence'])
+                if dialog_line['valence']==4.0:
+                    dialog_line['valence']=dialog_line['valence']+random.randrange(-1, 1)
             if 'activation' in line:
                 dialog_line['activation']=float(line['activation'])
+                if dialog_line['activation']==4.0:
+                    dialog_line['activation']=dialog_line['activation']+random.randrange(-1, 1)
 
-        dialog_lines.append(dialog_line)
+    #    if 'input_mode' in line:
+     #       dialog_line['input_mode']=line['input_mode']
+
+        dialog_lines.append(normalizeEmotions(dialog_line))
 
     dialogs.append(dialog_lines)
 

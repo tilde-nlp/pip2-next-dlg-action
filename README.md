@@ -11,7 +11,21 @@ Next Dialog Action Prediction model
 
 ## Training model
 - Training is invoked by running command `python TrainModel.py`
-- File `train_config.ini` contains path for the model dictionary, path for the model, path of the embedding file, directory of training data (all files in the directory will be used for model training), embedding dimensions, embedding engine (`fasttext' is the only option), use of emotion variables in model training, number of epochs, number of folds for the cross validation.
+- File `train_config.ini` contains:
+-	`dict_path` - path for the model dictionary,
+-	`model_path` - path for the trained model,
+-	`training_data_dir` - directory of training data (all files in the directory will be used for model training),
+-	`emb_type` - embedding engine (`fasttext`, `bert` or `transformer`), 
+-	`emb_path` - path of the embedding file for the fasttext model or name of the transformer model (e.g., `LaBSE`),
+-	`emb_dim` - embedding dimensions,
+-	`other_data_dir` - directory of training data in different language,
+-	`other_emb_type` - embedding engine for data in different language(`fasttext`, `bert` or `transformer`), 
+-	`other_emb_path` - path of the embedding file for data in different language for the fasttext model or name of the transformer model (e.g., `LaBSE`),
+-	`test_on_all_sets` - values True/False, if data in both languages should be used for testing
+-	`train_on_all_sets` - values True/False, if data in both languages should be used for training
+-	`use_emotion` - use of emotion variables in model training,
+-	`epochs` - number of epochs to train the model,
+-	`xvalidation_folds` - number of folds for the cross validation.
 - Training data are files in YAML format.
 Example:
 <pre>
@@ -21,10 +35,12 @@ Example:
   valence: "4"
   activation: "4"
   utterance: "hello"
+  input_mode: "txt"
+  input_language: "LV"
 </pre>
 ## Using model
 - Trained model is run by command `python PredictNextAction.py`. It returns the list of actions and probabilities in JSON format.
-- File `config.ini` must contain path of the dictionary, path of the model, path of the embedding file, embedding dimensions, embedding engine (`fasttext` is the only option), use of emotion variables in model training.
+- File `config.ini` must contain path of the dictionary, path of the model, path of the embedding file for fasttext model or name of transformer model, embedding dimensions, embedding engine (`fasttext`, `bert` or `transformer`), use of emotion variables in model training.
 - Input in JSON format contain conversation history.
 Example:
 
